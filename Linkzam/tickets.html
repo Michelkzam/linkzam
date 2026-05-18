@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets - Listagem Profissional Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #3498db;
+            --text-color: #ecf0f1;
+            --bg-body: #f4f7f6;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-body); }
+
+        /* --- SIDEBAR ORIGINAL MANTIDA --- */
+        .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s ease; z-index: 100; }
+        .sidebar-header { height: var(--header-height); display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.2); padding: 70px; position: relative; transition: all 0.3s ease; }
+        .logo-sidebar { max-width: 140%; max-height: 140px; height: auto; transition: all 0.3s ease; }
+        .sidebar-menu { flex: 1; overflow-y: auto; padding-top: 20px; overflow-x: hidden; }
+        .menu-category { padding: 20px 25px 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #95a5a6; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .menu-item { padding: 15px 25px; display: flex; align-items: center; text-decoration: none; color: var(--text-color); border-left: 4px solid transparent; white-space: nowrap; transition: background 0.2s; }
+        .menu-item:hover, .menu-item.active { background-color: var(--secondary-color); border-left: 4px solid var(--accent-color); }
+        .submenu { display: none; flex-direction: column; background-color: #243342; }
+        .submenu.open { display: flex; }
+        .submenu .menu-item { padding-left: 40px; font-size: 0.9rem; }
+        .category-icon { margin-right: 10px; }
+        
+        /* --- ESTADO RECOLHIDO --- */
+        .sidebar.collapsed { width: 70px; }
+        .sidebar.collapsed .sidebar-header { padding: 10px 0; height: 80px; }
+        .sidebar.collapsed .menu-category-text span, 
+        .sidebar.collapsed .menu-item span, 
+        .sidebar.collapsed .submenu-toggle-icon { display: none; }  
+        .sidebar.collapsed .category-icon { margin-right: 0; font-size: 1.3rem; }
+        .sidebar.collapsed .menu-category { padding: 20px 0 10px; justify-content: center; }
+        .sidebar.collapsed .menu-item { padding: 15px 0; justify-content: center; }
+        .sidebar.collapsed .submenu .menu-item { padding-left: 0; }
+
+        .toggle-btn { position: absolute; top: 15px; right: 15px; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
+        .sidebar.collapsed .toggle-btn { position: relative; top: 0; right: 0; margin-bottom: 10px; }
+
+        /* --- ESTRUTURA PRINCIPAL --- */
+        .main-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { 
+            height: var(--header-height); background-color: #fff; display: flex; align-items: center; 
+            padding: 0 20px; justify-content: space-between; margin: 5px; border-radius: 4px; 
+            border: 2px solid transparent; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: border-color 0.4s ease;
+        }
+        .content-view { flex: 1; padding: 25px; overflow-y: auto; }
+
+        /* --- DASHBOARD CARDS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: white; padding: 20px; border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; 
+            align-items: center; justify-content: space-between; 
+            border-bottom: 4px solid #ddd; transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-info h3 { font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-info p { font-size: 1.8rem; font-weight: bold; color: var(--primary-color); }
+        .stat-card i { font-size: 2.2rem; opacity: 0.2; }
+
+        .border-tickets { border-color: var(--accent-color); }
+        .border-online { border-color: var(--success); }
+        .border-offline { border-color: var(--danger); }
+        .border-alerts { border-color: var(--warning); }
+
+        .bg-blue-light { background: #ebf5fb; color: #3498db; }
+        .bg-green-light { background: #eafaf1; color: #27ae60; }
+        .bg-yellow-light { background: #fef9e7; color: #f1c40f; }
+        .bg-red-light { background: #fdedec; color: #e74c3c; }
+
+        /* --- FILTROS E BUSCA --- */
+        .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .search-wrapper { position: relative; flex: 1; min-width: 200px; }
+        .search-wrapper input { width: 100%; padding: 8px 35px 8px 15px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 0.9rem; background: #fff; }
+        .search-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #95a5a6; }
+        
+        .filter-select { padding: 7px 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; color: #7f8c8d; font-size: 0.85rem; cursor: pointer; outline: none; }
+        .btn-new-ticket { padding: 8px 18px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-left: auto; }
+
+        /* --- TABELA --- */
+        .card-table { background: white; border-radius: 8px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .table-custom { width: 100%; border-collapse: collapse; min-width: 900px; }
+        .table-custom th { text-align: left; padding: 15px 10px; font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        .table-custom td { padding: 12px 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; color: #2c3e50; vertical-align: middle; }
+        
+        .ticket-id { color: #e74c3c; font-weight: bold; }
+        .client-info b { display: block; font-size: 0.85rem; }
+        .client-info span { font-size: 0.75rem; color: #95a5a6; }
+        
+        .action-btns { display: flex; gap: 5px; }
+        .btn-action { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; border: none; font-size: 0.8rem; }
+        .btn-view { background: #f1c40f; }
+        .btn-play { background: #27ae60; }
+        .btn-edit { background: #3498db; }
+        .btn-transfer { background: #e67e22; }
+        .btn-finish {     background: #e74c3c; }
+        
+        /* Efeito de hover para manter a interatividade */
+        .btn-action:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        /* Cores Menu */
+        .clr-principal { color: #1abc9c !important; } .clr-helpdesk { color: #3498db !important; }  
+        .clr-rmm { color: #e67e22 !important; } .clr-cadastros { color: #9b59b6 !important; } 
+        .clr-sincronizar { color: #f1c40f !important; } .clr-config { color: #95a5a6 !important; }    
+        .clr-perfil { color: #e74c3c !important; }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-bars toggle-btn" id="toggle-menu-btn" title="Alternar Menu"></i>
+            <img src="logolinkzam2.png" alt="Logo" class="logo-sidebar" id="logo-sidebar">
+        </div>
+        
+        <nav class="sidebar-menu">
+            <div id="cat-principal" class="menu-category clr-principal" onclick="toggleSubmenu('sub-principal', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-house category-icon"></i> <span>Principal</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-principal">
+                <a href="index.html" class="menu-item active"><i class="fa-solid fa-chart-line"></i> <span>&nbsp; Dashboard</span></a>
+            </div>
+            
+            <div id="cat-helpdesk" class="menu-category clr-helpdesk" onclick="toggleSubmenu('sub-helpdesk', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-headset category-icon"></i> <span>Help Desk</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-helpdesk">
+                <a href="tickets.html" class="menu-item"><i class="fa-solid fa-ticket"></i> <span>&nbsp; Tickets</span></a>
+                <a href="chats.html" class="menu-item"><i class="fa-solid fa-comments"></i> <span>&nbsp; Chats</span></a>
+                <a href="kb.html" class="menu-item"><i class="fa-solid fa-book"></i> <span>&nbsp; Base de Conhecimento</span></a>
+                <a href="clientes.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Clientes/SLA</span></a>
+                <a href="Usuários.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Usuários</span></a>
+                <a href="operadores.html" class="menu-item"><i class="fa-solid fa-headset"></i> <span>&nbsp; Operadores</span></a>
+                
+            </div>
+            
+            <div id="cat-rmm" class="menu-category clr-rmm" onclick="toggleSubmenu('sub-rmm', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-server category-icon"></i> <span>RMM</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-rmm">
+                <a href="dispositivos.html" class="menu-item"><i class="fa-solid fa-desktop"></i> <span>&nbsp; Dispositivos</span></a>
+                <a href="alertas.html" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> <span>&nbsp; Alertas</span></a>
+                <a href="scripts.html" class="menu-item"><i class="fa-solid fa-terminal"></i> <span>&nbsp; Scripts/Automação</span></a>
+                <a href="inventario.html" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> <span>&nbsp; Inventário</span></a>
+            </div>
+
+            <div id="cat-cadastros" class="menu-category clr-cadastros" onclick="toggleSubmenu('sub-cadastros', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-address-book category-icon"></i> <span>Cadastros</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-cadastros">
+                <a href="cadastros.html" class="menu-item"><i class="fa-solid fa-address-book"></i> <span>&nbsp; Cadastros Gerais</span></a>
+            </div>
+
+            <div id="cat-sincronizar" class="menu-category clr-sincronizar" onclick="toggleSubmenu('sub-sincronizar', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-rotate category-icon"></i> <span>Sincronizar</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-sincronizar">
+                <a href="sincronizar.html" class="menu-item"><i class="fa-solid fa-rotate"></i> <span>&nbsp; Sincronização</span></a>
+            </div>
+            
+            <div id="cat-config" class="menu-category clr-config" onclick="toggleSubmenu('sub-config', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-gear category-icon"></i> <span>Configurações</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-config">
+                <a href="config_sistema.html" class="menu-item"><i class="fa-solid fa-sliders"></i> <span>&nbsp; Sistema</span></a>
+                <a href="config_usuarios.html" class="menu-item"><i class="fa-solid fa-user-gear"></i> <span>&nbsp; Usuários</span></a>
+                <a href="config_operadores.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> <span>&nbsp; Operadores</span></a>
+            </div>
+
+            <div id="cat-perfil" class="menu-category clr-perfil" onclick="toggleSubmenu('sub-perfil', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-circle-user category-icon"></i> <span>Perfil</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-perfil">
+                <a href="perfil.html" class="menu-item"><i class="fa-solid fa-circle-user"></i> <span>&nbsp; Meu Perfil e Tema</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam > Help Desk > <strong>Tickets</strong></div>
+            <div id="date-display"></div>
+            <div class="user-profile">Operador: <strong>Admin</strong></div>
+        </header>
+
+        <main class="content-view">
+            <div class="stats-grid">
+                <div class="stat-card border-tickets">
+                    <div class="stat-info"><h3>Abertos</h3><p>12</p></div>
+                    <i class="fa-solid fa-ticket bg-blue-light"></i>
+                </div>
+                <div class="stat-card border-online">
+                    <div class="stat-info"><h3>Resolvidos</h3><p>45</p></div>
+                    <i class="fa-solid fa-circle-check bg-green-light"></i>
+                </div>
+                <div class="stat-card border-alerts">
+                    <div class="stat-info"><h3>Em Aguardo</h3><p>7</p></div>
+                    <i class="fa-solid fa-clock bg-yellow-light"></i>
+                </div>
+                <div class="stat-card border-offline">
+                    <div class="stat-info"><h3>SLA Crítico</h3><p>2</p></div>
+                    <i class="fa-solid fa-fire bg-red-light"></i>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="search-wrapper">
+                    <input type="text" placeholder="Buscar ticket...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <select class="filter-select"><option>Tipo</option></select>
+                <select class="filter-select"><option>Prioridade</option></select>
+                <select class="filter-select"><option>Status</option></select>
+                <select class="filter-select"><option>Clientes</option></select>
+                <select class="filter-select"><option>Operador</option></select>
+                <button class="btn-new-ticket">+ Novo Ticket</button>
+            </div>
+
+            <div class="card-table">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;"><input type="checkbox"></th>
+                            <th>Ticket</th>
+                            <th>Solicitante / Contato</th>
+                            <th>Assunto</th>
+                            <th>Categoria</th>
+                            <th>Prioridade</th>
+                            <th>Situação</th>
+                            <th>Operador</th>
+                            <th>Criado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td class="ticket-id">#3466</td>
+                            <td class="client-info">
+                                <b>CLOUD - HPEREIRA</b>
+                                <span>hpereira - bianca</span>
+                            </td>
+                            <td>Erro no Backup Nuvem</td>
+                            <td>Acesso Remoto</td>
+                            <td><i class="fa-solid fa-angles-up" position="center" style="color: #e74c3c;"></i></td>
+                            <td><i class="fa-solid fa-circle-check" position="center" style="color: #2c3e50;"></i></td>
+                            <td>Michel Kzam</td>
+                            <td>há 2 horas</td>
+                            <td>
+                               <div class="action-btns">
+                                    <button class="btn-action btn-view" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
+                                    <button class="btn-action btn-play" title="Iniciar"><i class="fa-solid fa-play"></i></button>
+                                    <button class="btn-action btn-edit" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                                    <button class="btn-action btn-transfer" title="Transferir"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                                    <button class="btn-action btn-finish" title="Finalizar"><i class="fa-solid fa-check-double"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>                     
+        </main>
+    </div>
+
+    <script>
+        function atualizarData() {
+            const op = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateElem = document.getElementById('date-display');
+            if(dateElem) dateElem.innerText = new Date().toLocaleDateString('pt-BR', op);
+        }
+
+        function pintarHeader(elemento) {
+            if(!elemento) return;
+            const icon = elemento.querySelector('.category-icon');
+            if(icon) {
+                const cor = window.getComputedStyle(icon).color;
+                document.getElementById('main-header').style.borderColor = cor;
+            }
+        }
+
+        function toggleSubmenu(id, elemento) {
+            const sub = document.getElementById(id);
+            const isOpened = sub.classList.contains('open');
+            document.querySelectorAll('.submenu').forEach(s => s.classList.remove('open'));
+            if(!isOpened) {
+                sub.classList.add('open');
+                pintarHeader(elemento);
+            }
+        }
+
+        function handleSidebarState() {
+            const sidebar = document.getElementById('sidebar');
+            const logo = document.getElementById('logo-sidebar');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+
+            // Ajuste da Logo
+            if(logo) {
+                logo.style.maxWidth = isCollapsed ? '45px' : '140%';
+                logo.style.maxHeight = isCollapsed ? '45px' : '140px';
+            }
+
+            // Ajuste dos Titles (Nomes das seções no mouse)
+            document.querySelectorAll('.menu-category').forEach(cat => {
+                const txt = cat.querySelector('.menu-category-text span')?.innerText;
+                cat.setAttribute('title', isCollapsed ? txt : "");
+            });
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                const txt = item.querySelector('span')?.innerText.trim();
+                item.setAttribute('title', isCollapsed ? txt : "");
+            });
+        }
+
+        // Único Event Listener para o botão de fechar/abrir
+        document.getElementById('toggle-menu-btn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            handleSidebarState(); 
+        });
+
+        window.onload = () => {
+            atualizarData();
+            handleSidebarState();
+            
+            // Abre o Helpdesk por padrão
+            const catHelp = document.getElementById('cat-helpdesk');
+            const subHelp = document.getElementById('sub-helpdesk');
+            if(subHelp) subHelp.classList.add('open');
+            pintarHeader(catHelp);
+        };
+
+                    // Função genérica para capturar o ID do chat da linha da tabela
+        function getChatId(btn) {
+            return btn.closest('tr').querySelector('.ticket-id').innerText;
+        }
+
+        // 1. Visualizar Chat
+        function visualizarChat(id) {
+            Swal.fire({
+                title: `Visualizando ${id}`,
+                text: "Aqui você abriria o histórico completo ou detalhes do cliente.",
+                icon: 'info',
+                confirmButtonColor: '#3498db'
+            });
+        }
+
+        // 2. Iniciar/Assumir Chat
+        function iniciarChat(id) {
+            Swal.fire({
+                title: 'Assumir atendimento?',
+                text: `Você será registrado como o operador do ${id}`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, iniciar',
+                confirmButtonColor: '#27ae60'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Iniciado!', 'O chat agora está sob sua responsabilidade.', 'success');
+                }
+            });
+        }
+
+        // 3. Editar Dados
+        function editarChat(id) {
+            Swal.fire({
+                title: 'Editar Informações',
+                input: 'text',
+                inputLabel: `Alterar assunto do ${id}`,
+                showCancelButton: true,
+                confirmButtonColor: '#3498db'
+            });
+        }
+
+        // 4. Transferir Atendimento
+        function transferirChat(id) {
+            Swal.fire({
+                title: 'Transferir Chat',
+                input: 'select',
+                inputOptions: {
+                    'suporte': 'Suporte Nível 2',
+                    'financeiro': 'Financeiro',
+                    'vendas': 'Vendas'
+                },
+                inputPlaceholder: 'Selecione o departamento',
+                showCancelButton: true,
+                confirmButtonColor: '#f39c12'
+            }).then((result) => {
+                if (result.value) {
+                    Swal.fire('Transferido!', `Enviado para ${result.value}`, 'success');
+                }
+            });
+        }
+
+        // 5. Finalizar Atendimento
+        function finalizarChat(id) {
+            Swal.fire({
+                title: 'Concluir atendimento?',
+                text: "O chat será movido para o histórico de encerrados.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sim, finalizar',
+                confirmButtonColor: '#e74c3c'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire('Finalizado!', 'Atendimento encerrado com sucesso.', 'success');
+                }
+            });
+        }
+
+        // Vinculando os cliques (Exemplo via Listeners)
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-action');
+            if (!btn) return;
+
+            const id = getChatId(btn);
+
+            if (btn.classList.contains('btn-view')) visualizarChat(id);
+            if (btn.classList.contains('btn-play')) iniciarChat(id);
+            if (btn.classList.contains('btn-edit')) editarChat(id);
+            if (btn.classList.contains('btn-transfer')) transferirChat(id);
+            if (btn.classList.contains('btn-finish')) finalizarChat(id);
+        });
+        
+    </script>
+</body>
+</html>
