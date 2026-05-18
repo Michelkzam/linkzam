@@ -180,48 +180,57 @@
             <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
         </div>
         <div class="submenu" id="sub-helpdesk">
-            <a class="menu-item" href="tickets.html"><span>Tickets</span></a>
-            <a class="menu-item" href="chataovivo.html"><span>Chat ao Vivo</span></a>
-            <a class="menu-item" href="base-de-conhecimento.html"><span>Base de Conhecimento</span></a>
-            <a class="menu-item" href="clientes-sla.html"><span>Clientes / SLA</span></a>
-        </div>
+                <a href="tickets.html" class="menu-item"><i class="fa-solid fa-ticket"></i> <span>&nbsp; Tickets</span></a>
+                <a href="chats.html" class="menu-item"><i class="fa-solid fa-comments"></i> <span>&nbsp; Chats</span></a>
+                <a href="kb.html" class="menu-item"><i class="fa-solid fa-book"></i> <span>&nbsp; Base de Conhecimento</span></a>
+                <a href="clientes.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Clientes/SLA</span></a>
+                <a href="Usuários.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Usuários</span></a>
+                <a href="operadores.html" class="menu-item"><i class="fa-solid fa-headset"></i> <span>&nbsp; Operadores</span></a>
+            </div>
 
         <div id="cat-rmm" class="menu-category clr-rmm" onclick="toggleSubmenu('sub-rmm', this)">
             <span class="menu-category-text"><span><i class="fa-solid fa-desktop category-icon"></i> RMM</span></span>
             <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
         </div>
         <div class="submenu" id="sub-rmm">
-            <a class="menu-item" href="dispositivos.html"><span>Dispositivos</span></a>
-            <a class="menu-item" href="alertas.html"><span>Alertas</span></a>
-            <a class="menu-item" href="inventario.html"><span>Inventário</span></a>
-        </div>
+                <a href="dispositivos.html" class="menu-item"><i class="fa-solid fa-desktop"></i> <span>&nbsp; Dispositivos</span></a>
+                <a href="alertas.html" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> <span>&nbsp; Alertas</span></a>
+                <a href="scripts.html" class="menu-item"><i class="fa-solid fa-terminal"></i> <span>&nbsp; Scripts/Automação</span></a>
+                <a href="inventario.html" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> <span>&nbsp; Inventário</span></a>
+            </div>
 
-        <div id="cat-automacao" class="menu-category" onclick="toggleSubmenu('sub-automacao', this)">
-            <span class="menu-category-text"><span><i class="fa-solid fa-gear category-icon"></i> Automação</span></span>
-            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-        </div>
-        <div class="submenu" id="sub-automacao">
-            <a class="menu-item" href="scripts-automacao.html"><span>Scripts</span></a>
-        </div>
+        <div id="cat-cadastros" class="menu-category clr-cadastros" onclick="toggleSubmenu('sub-cadastros', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-address-book category-icon"></i> <span>Cadastros</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-cadastros">
+                <a href="cadastros.html" class="menu-item"><i class="fa-solid fa-address-book"></i> <span>&nbsp; Cadastros Gerais</span></a>
+            </div>
 
-        <div id="cat-sincronizar" class="menu-category" onclick="toggleSubmenu('sub-sincronizar', this)">
-            <span class="menu-category-text"><span><i class="fa-solid fa-sync category-icon"></i> Sincronizar</span></span>
-            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-        </div>
-        <div class="submenu" id="sub-sincronizar">
-            <a class="menu-item" href="sincronizar.html"><span>Mensageiras</span></a>
-        </div>
+            <div id="cat-sincronizar" class="menu-category clr-sincronizar" onclick="toggleSubmenu('sub-sincronizar', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-rotate category-icon"></i> <span>Sincronizar</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-sincronizar">
+                <a href="sincronizar.html" class="menu-item"><i class="fa-solid fa-rotate"></i> <span>&nbsp; Sincronização</span></a>
+            </div>
+            
+            <div id="cat-config" class="menu-category clr-config" onclick="toggleSubmenu('sub-config', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-gear category-icon"></i> <span>Configurações</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-config">
+                <a href="config_sistema.html" class="menu-item"><i class="fa-solid fa-sliders"></i> <span>&nbsp; Sistema</span></a>
+                <a href="config_usuarios.html" class="menu-item"><i class="fa-solid fa-user-gear"></i> <span>&nbsp; Usuários</span></a>
+                <a href="config_operadores.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> <span>&nbsp; Operadores</span></a>
+            </div>
 
-        <div id="cat-config" class="menu-category clr-config" onclick="toggleSubmenu('sub-config', this)">
-            <span class="menu-category-text"><span><i class="fa-solid fa-cog category-icon"></i> Configurações</span></span>
-            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-        </div>
-        <div class="submenu" id="sub-config">
-            <a class="menu-item" href="configuracoes-sistema.html"><span>Sistema</span></a>
-            <a class="menu-item" href="configuracoes-usuarios.html"><span>Usuários</span></a>
-            <a class="menu-item" href="configuracoes-operadores.html"><span>Operadores</span></a>
-            <a class="menu-item" href="cadastros-gerais.html"><span>Cadastros Gerais</span></a>
-            <a class="menu-item" href="meu-perfil.html"><span>Meu Perfil</span></a>
-        </div>
+            <div id="cat-perfil" class="menu-category clr-perfil" onclick="toggleSubmenu('sub-perfil', this)">
+                <span class="menu-category-text"><i class="fa-solid fa-circle-user category-icon"></i> <span>Perfil</span></span>
+                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+            </div>
+            <div class="submenu" id="sub-perfil">
+                <a href="perfil.html" class="menu-item"><i class="fa-solid fa-circle-user"></i> <span>&nbsp; Meu Perfil e Tema</span></a>
+            </div>
     </nav>
 </aside>
