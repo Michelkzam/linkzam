@@ -3,313 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linkzam | Dashboard Geral</title>
+    <title>Dashboard Inválido - Linkzam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --sidebar-width: 250px;
-            --header-height: 60px;
-            --primary-color: #2c3e50;
-            --secondary-color: #34495e;
-            --accent-color: #3498db;
-            --text-color: #ecf0f1;
-            --bg-body: #f4f7f6;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #e74c3c;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-
-        body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-body); }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--primary-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-        }
-
-        .sidebar-header {
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0,0,0,0.2);
-            padding: 70px;
-        }
-
-        .logo-sidebar { max-width: 140%; max-height: 140px; height: auto; }
-
-        .sidebar-menu { flex: 1; overflow-y: auto; padding-top: 20px; }
-
-        .menu-item {
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-color);
-            transition: background 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .menu-item.active { background-color: var(--secondary-color); border-left: 4px solid var(--accent-color); }
-        .menu-item:hover { background-color: var(--secondary-color); }
-
-        .menu-category { padding: 20px 25px 5px; font-size: 0.75rem; text-transform: uppercase; color: #95a5a6; }
-
-        /* --- MAIN CONTENT --- */
-        .main-container { flex: 1; display: flex; flex-direction: column; }
-
-        header {
-            height: var(--header-height);
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            justify-content: space-between;
-        }
-
-        .content-view { flex: 1; padding: 25px; overflow-y: auto; }
-
-        /* --- DASHBOARD WIDGETS --- */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        /* Ajuste para tornar os cards clicáveis */
-        .stat-link { text-decoration: none; color: inherit; display: block; }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 4px solid #ddd;
-            transition: transform 0.2s;
-            cursor: pointer;
-        }
-
-        .stat-card:hover { transform: translateY(-5px); }
-
-        .stat-card i { font-size: 2.5rem; opacity: 0.2; }
-        .stat-info h3 { font-size: 0.9rem; color: #7f8c8d; text-transform: uppercase; }
-        .stat-info p { font-size: 1.8rem; font-weight: bold; color: var(--primary-color); }
-
-        .border-tickets { border-color: var(--accent-color); }
-        .border-online { border-color: var(--success); }
-        .border-offline { border-color: var(--danger); }
-        .border-alerts { border-color: var(--warning); }
-
-        /* --- GRÁFICOS E TABELAS --- */
-        .dashboard-row {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .table-simple { width: 100%; border-collapse: collapse; }
-        .table-simple th { text-align: left; padding: 10px; color: #7f8c8d; font-size: 0.85rem; }
-        .table-simple td { padding: 12px 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem; }
-
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: white;
-        }
-        .bg-high { background-color: var(--danger); }
-        .bg-low { background-color: var(--success); }
-    </style>
+    <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
-
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <img src="logolinkzam2.png" alt="Linkzam Logo" class="logo-sidebar">
-        </div>
-        
-        <nav class="sidebar-menu">
-            <div class="menu-category">Principal</div>
-            <a href="dashboard.html" class="menu-item active"><i class="fa-solid fa-chart-line"></i> &nbsp; Dashboard</a>
-            
-            <div class="menu-category">Help Desk</div>
-            <a href="tickets.html" class="menu-item"><i class="fa-solid fa-ticket"></i> &nbsp; Tickets</a>
-            <a href="clientes.html" class="menu-item"><i class="fa-solid fa-users"></i> &nbsp; Clientes</a>
-            
-            <div class="menu-category">RMM</div>
-            <a href="dispositivos.html" class="menu-item"><i class="fa-solid fa-desktop"></i> &nbsp; Dispositivos</a>
-            <a href="alertas.html" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> &nbsp; Alertas</a>
-            
-            <div class="menu-category">Configurações</div>
-            <a href="usuarios.html" class="menu-item"><i class="fa-solid fa-gear"></i> &nbsp; Usuários</a>
-        </nav>
-    </aside>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>
+        fetch('layout.html')
+            .then(r => r.text())
+            .then(html => { document.getElementById('sidebar-root').innerHTML = html; })
+            .then(() => { if (window.initializeLayout) initializeLayout(); });
+    </script>
 
     <div class="main-container">
-        <header>
-            <div class="breadcrumb">Linkzam > Dashboard Geral</div>
-            <div id="date-display" style="font-size: 14px; color: #7f8c8d; font-weight: 500;"></div>
-            <div class="user-profile"><strong>Técnico:</strong> Admin</div>
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam > Dashboard Inválido</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
         </header>
 
         <main class="content-view">
-            
             <div class="card">
-                <h2>Bem-vindo ao Painel Linkzam</h2>
-                <p>Selecione uma opção no menu lateral para gerenciar os serviços.</p>
+                <h2>Dashboard Inválido</h2>
+                <p>Esta página agora utiliza o layout compartilhado para manter margens e espaçamentos consistentes.</p>
             </div>
-
-            <div class="stats-grid">
-                <a href="tickets.html" class="stat-link">
-                    <div class="stat-card border-tickets">
-                        <div class="stat-info">
-                            <h3>Tickets Abertos</h3>
-                            <p>12</p>
-                        </div>
-                        <i class="fa-solid fa-ticket-alt" style="color: var(--accent-color)"></i>
-                    </div>
-                </a>
-
-                <a href="dispositivos.html" class="stat-link">
-                    <div class="stat-card border-online">
-                        <div class="stat-info">
-                            <h3>Dispositivos Online</h3>
-                            <p>145</p>
-                        </div>
-                        <i class="fa-solid fa-circle-check" style="color: var(--success)"></i>
-                    </div>
-                </a>
-
-                <a href="dispositivos.html" class="stat-link">
-                    <div class="stat-card border-offline">
-                        <div class="stat-info">
-                            <h3>Dispositivos Offline</h3>
-                            <p>3</p>
-                        </div>
-                        <i class="fa-solid fa-circle-xmark" style="color: var(--danger)"></i>
-                    </div>
-                </a>
-
-                <a href="alertas.html" class="stat-link">
-                    <div class="stat-card border-alerts">
-                        <div class="stat-info">
-                            <h3>Alertas Críticos</h3>
-                            <p>8</p>
-                        </div>
-                        <i class="fa-solid fa-bell" style="color: var(--warning)"></i>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="dashboard-row">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Últimos Chamados</h2>
-                        <a href="tickets.html" style="font-size: 0.8rem; color: var(--accent-color); text-decoration: none;">Ver todos</a>
-                    </div>
-                    <table class="table-simple">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Assunto</th>
-                                <th>Cliente</th>
-                                <th>Status</th>
-                                <th>Prioridade</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr onclick="window.location='tickets.html';" style="cursor:pointer;">
-                                <td>#4501</td>
-                                <td>Erro no Backup - Server 01</td>
-                                <td>Matrix Corp</td>
-                                <td><span class="badge bg-high">Aberto</span></td>
-                                <td>Alta</td>
-                            </tr>
-                            <tr onclick="window.location='tickets.html';" style="cursor:pointer;">
-                                <td>#4498</td>
-                                <td>Instalação de Office</td>
-                                <td>Tech Solutions</td>
-                                <td><span class="badge bg-low" style="background: #f39c12;">Em Curso</span></td>
-                                <td>Baixa</td>
-                            </tr>
-                            <tr onclick="window.location='tickets.html';" style="cursor:pointer;">
-                                <td>#4495</td>
-                                <td>Rede lenta no setor 02</td>
-                                <td>Padaria Real</td>
-                                <td><span class="badge bg-high">Aberto</span></td>
-                                <td>Urgente</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="card">
+                <div class="card-header">
+                    <h2>Informações Rápidas</h2>
                 </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Health Check RMM</h2>
-                    </div>
-                    <div style="padding: 10px 0;">
-                        <p style="font-size: 0.9rem; margin-bottom: 5px;">CPU Usage (Global)</p>
-                        <div style="width: 100%; height: 10px; border-radius: 5px; background: #eee;">
-                            <div style="width: 45%; background: var(--accent-color); height: 100%; border-radius: 5px;"></div>
-                        </div>
-                    </div>
-                    <div style="padding: 10px 0;">
-                        <p style="font-size: 0.9rem; margin-bottom: 5px;">Memory Usage (Global)</p>
-                        <div style="width: 100%; height: 10px; border-radius: 5px; background: #eee;">
-                            <div style="width: 72%; background: var(--warning); height: 100%; border-radius: 5px;"></div>
-                        </div>
-                    </div>
-                    <div style="padding: 10px 0;">
-                        <p style="font-size: 0.9rem; margin-bottom: 5px;">Disk Space Status</p>
-                        <div style="width: 100%; height: 10px; border-radius: 5px; background: #eee;">
-                            <div style="width: 30%; background: var(--success); height: 100%; border-radius: 5px;"></div>
-                        </div>
-                    </div>
-                </div>
+                <p>Esta tela foi ajustada para se alinhar ao mesmo padrão das demais páginas da aplicação.</p>
             </div>
-
         </main>
     </div>
-
-    <script>
-        function atualizarData() {
-            const dataElemento = document.getElementById('date-display');
-            const agora = new Date();
-            const opcoes = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            let dataFormatada = agora.toLocaleDateString('pt-BR', opcoes);
-            dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
-            dataElemento.innerText = dataFormatada;
-        }
-        window.onload = atualizarData;
-    </script>
 </body>
 </html>

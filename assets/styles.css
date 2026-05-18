@@ -19,13 +19,20 @@
 }
 
 html, body {
+    width: 100%;
     min-height: 100%;
 }
 
 body {
     display: flex;
     min-height: 100vh;
+    margin: 0;
+    overflow: hidden;
     background-color: var(--bg-body);
+}
+
+main, .main-container {
+    min-height: 0;
 }
 
 /* --- SIDEBAR --- */
@@ -274,8 +281,26 @@ header {
 
 .btn-new-ticket,
 .btn-remote,
-.btn-salvar {
+.btn-salvar,
+.btn-primary,
+button {
     cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--accent-color);
+    color: #fff;
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: filter 0.2s ease;
+}
+
+.btn-new-ticket:hover,
+.btn-remote:hover,
+.btn-salvar:hover,
+.btn-primary:hover,
+button:hover {
+    filter: brightness(0.95);
 }
 
 @media (max-width: 900px) {
