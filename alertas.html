@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas - Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>
+        fetch('layout.html')
+            .then(r => r.text())
+            .then(html => { document.getElementById('sidebar-root').innerHTML = html; })
+            .then(() => { if (window.initializeLayout) initializeLayout(); });
+    </script>
+
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam &gt; Alertas</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
+        </header>
+
+        <main class="content-view">
+            <div class="card">
+                <h3>Alertas Ativas</h3>
+                <table class="table-custom">
+                    <thead>
+                        <tr><th>Dispositivo</th><th>Severidade</th><th>Mensagem</th><th>Data</th></tr>
+                    </thead>
+        </main>
+    </div>
+</body>
+</html>

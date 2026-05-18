@@ -1,0 +1,64 @@
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <i class="fa-solid fa-bars toggle-btn" id="toggle-menu-btn" title="Alternar Menu" onclick="toggleSidebar()"></i>
+        <img src="logolinkzam2.png" alt="Logo" class="logo-sidebar" id="logo-sidebar">
+    </div>
+    <nav class="sidebar-menu">
+        <div id="cat-principal" class="menu-category clr-principal" onclick="toggleSubmenu('sub-principal', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-house category-icon"></i> Principal</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-principal">
+            <a class="menu-item" href="index.html"><span>Dashboard</span></a>
+        </div>
+
+        <div id="cat-helpdesk" class="menu-category clr-helpdesk" onclick="toggleSubmenu('sub-helpdesk', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-headset category-icon"></i> HelpDesk</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-helpdesk">
+            <a class="menu-item" href="tickets.html"><span>Tickets</span></a>
+            <a class="menu-item" href="chataovivo.html"><span>Chat ao Vivo</span></a>
+            <a class="menu-item" href="base-de-conhecimento.html"><span>Base de Conhecimento</span></a>
+            <a class="menu-item" href="clientes-sla.html"><span>Clientes / SLA</span></a>
+        </div>
+
+        <div id="cat-rmm" class="menu-category clr-rmm" onclick="toggleSubmenu('sub-rmm', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-desktop category-icon"></i> RMM</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-rmm">
+            <a class="menu-item" href="dispositivos.html"><span>Dispositivos</span></a>
+            <a class="menu-item" href="alertas.html"><span>Alertas</span></a>
+            <a class="menu-item" href="inventario.html"><span>Inventário</span></a>
+        </div>
+
+        <div id="cat-automacao" class="menu-category" onclick="toggleSubmenu('sub-automacao', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-gear category-icon"></i> Automação</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-automacao">
+            <a class="menu-item" href="scripts-automacao.html"><span>Scripts</span></a>
+        </div>
+
+        <div id="cat-sincronizar" class="menu-category" onclick="toggleSubmenu('sub-sincronizar', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-sync category-icon"></i> Sincronizar</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-sincronizar">
+            <a class="menu-item" href="sincronizar.html"><span>Mensageiras</span></a>
+        </div>
+
+        <div id="cat-config" class="menu-category clr-config" onclick="toggleSubmenu('sub-config', this)">
+            <span class="menu-category-text"><span><i class="fa-solid fa-cog category-icon"></i> Configurações</span></span>
+            <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
+        </div>
+        <div class="submenu" id="sub-config">
+            <a class="menu-item" href="configuracoes-sistema.html"><span>Sistema</span></a>
+            <a class="menu-item" href="configuracoes-usuarios.html"><span>Usuários</span></a>
+            <a class="menu-item" href="configuracoes-operadores.html"><span>Operadores</span></a>
+            <a class="menu-item" href="cadastros-gerais.html"><span>Cadastros Gerais</span></a>
+            <a class="menu-item" href="meu-perfil.html"><span>Meu Perfil</span></a>
+        </div>
+    </nav>
+</aside>

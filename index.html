@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --sidebar-width: 250px;
+            --sidebar-width: 225px;
             --header-height: 60px;
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -315,9 +315,21 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="dashboard-row">
+                <div class="card">
+                    <div class="card-header"><h2>Alertas por Severidade</h2></div>
+                    <canvas id="chart-alerts" width="400" height="200"></canvas>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h2>Tickets por Categoria</h2></div>
+                    <canvas id="chart-tickets" width="400" height="200"></canvas>
+                </div>
+            </div>
         </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function atualizarData() {
             const op = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -378,6 +390,25 @@
             document.getElementById('sub-principal').classList.add('open');
             pintarHeader(catPrincipal);
         };
+
+        // Charts: tickets by category and alerts severity (derived from tickets priority)
+        (function(){
+            function drawCharts(){
+                fetch('/api/tickets').then(r=>r.json()).then(tickets=>{
+                    const byCategory = {};
+                    const byPriority = {};
+                    tickets.forEach(t=>{ byCategory[t.category || 'Sem Categoria'] = (byCategory[t.category || 'Sem Categoria']||0)+1; byPriority[t.priority || 'Normal'] = (byPriority[t.priority || 'Normal']||0)+1; });
+
+                    const ctx1 = document.getElementById('chart-alerts');
+                    if (ctx1) new Chart(ctx1.getContext('2d'), { type: 'doughnut', data: { labels: Object.keys(byPriority), datasets:[{ data:Object.values(byPriority), backgroundColor: ['#e74c3c','#f39c12','#27ae60','#3498db'] }] }, options:{ responsive:true } });
+
+                    const ctx2 = document.getElementById('chart-tickets');
+                    if (ctx2) new Chart(ctx2.getContext('2d'), { type: 'bar', data: { labels: Object.keys(byCategory), datasets:[{ label:'Tickets', data:Object.values(byCategory), backgroundColor:'#3498db' }] }, options:{ responsive:true, plugins:{ legend:{ display:false } } } });
+                }).catch(()=>{/* ignore */});
+            }
+            // draw after load
+            window.addEventListener('load', drawCharts);
+        })();
     </script>
 </body>
 </html>

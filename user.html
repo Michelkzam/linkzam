@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Acesso Usuário - Chat</title>
+</head>
+<body style="margin:0;height:100vh;">
+  <script>
+    // Página simples para usuários: redireciona ao chat com role=user
+    const chatId = new URLSearchParams(location.search).get('id') || 'Novo Chat';
+    location.replace(`chataovivo.html?id=${encodeURIComponent(chatId)}&role=user`);
+  </script>
+</body>
+</html>

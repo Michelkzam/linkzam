@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Dispositivos - Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        :root{--sidebar-width:225px}
+        *{box-sizing:border-box;font-family:Segoe UI,Arial}
+        body{display:flex;margin:0;min-height:100vh;background:#f4f7f6}
+        .card{background:#fff;padding:16px;border-radius:8px;margin-top:16px}
+        label{display:block;margin-top:8px}
+        input,select{padding:8px;border:1px solid #ddd;border-radius:6px;width:100%}
+        .device-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-bottom:1px solid #eee}
+        .device-meta{font-size:0.9rem;color:#666}
+        .btn-remote{background:#2c3e50;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer}
+        .btn-remote i{margin-right:6px}
+    </style>
+</head>
+<body>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>fetch('layout.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-root').innerHTML = html; }).then(()=>{ if(window.initializeLayout) initializeLayout(); });</script>
+
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam &gt; Dispositivos</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
+        </header>
+
+        <main class="content-view">
+            <div class="card">
+                <h3>Adicionar Dispositivo</h3>
+                <form id="formDevice">
+                    <label>Nome do Dispositivo</label>
+                    <input id="dname" required>
+                    <label>Serial</label>
+                    <input id="dserial">
+                    <label>Cliente</label>
+                    <select id="dclient"></select>
+                    <button type="submit" style="margin-top:10px;padding:10px 14px;border-radius:6px;background:#3498db;color:#fff;border:none">Adicionar Dispositivo</button>
+                </form>
+
+                <h3 style="margin-top:18px">Lista de Dispositivos</h3>
+                <div id="lista"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function loadClients(){ return fetch('/api/clients').then(r=>r.ok? r.json(): [] ).catch(()=>[]); }
+
+        function openRemote(deviceId, deviceName){
+            // open a remote session stub page in a new tab
+            const url = `remote.html?deviceId=${encodeURIComponent(deviceId)}&name=${encodeURIComponent(deviceName)}`;
+            const win = window.open(url, '_blank');
+            if(!win) alert('Permita popups para abrir a sessão remota.');
+            // optionally notify backend to prepare session (best-effort)
+            fetch('/api/remote/start', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ deviceId }) }).catch(()=>{});
+        }
+
+        function loadDevices(){ 
+            fetch('/api/devices').then(r=>r.ok? r.json(): []).then(d=>{ 
+                const out=document.getElementById('lista'); out.innerHTML=''; 
+                d.forEach(dev=>{ 
+                    const el=document.createElement('div'); el.className='device-row';
+                    el.innerHTML = `
+                        <div>
+                            <strong>${dev.name}</strong>
+                            <div class="device-meta">Serial: ${dev.serial||'-'} • Cliente: ${dev.clientName||dev.clientId||'-'}</div>
+                        </div>
+                        <div>
+                            <button class="btn-remote" onclick="openRemote('${dev.id}','${(dev.name||'').replace(/'/g,"\'")}')"><i class="fa-solid fa-arrow-up-right-from-square"></i>Acessar</button>
+                        </div>
+                    `;
+                    out.appendChild(el); 
+                }); 
+            }).catch(()=>{ document.getElementById('lista').innerHTML = '<div style="color:#999">Erro ao carregar dispositivos.</div>' });
+        }
+
+        // populate clients select and wire form
+        loadClients().then(clients=>{ const sel=document.getElementById('dclient'); sel.innerHTML = '<option value="">-- Selecionar Cliente --</option>'; clients.forEach(c=>{ const o=document.createElement('option'); o.value=c.id; o.textContent = c.name; sel.appendChild(o); }); });
+
+        document.getElementById('formDevice').addEventListener('submit', function(e){ 
+            e.preventDefault(); 
+            const payload = { name:document.getElementById('dname').value, serial:document.getElementById('dserial').value, clientId: document.getElementById('dclient').value || null };
+            fetch('/api/devices',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(()=>{ this.reset(); loadDevices(); }).catch(()=>{ alert('Erro ao adicionar dispositivo.'); });
+        });
+
+        // initial load
+        loadDevices();
+    </script>
+</body>
+</html>

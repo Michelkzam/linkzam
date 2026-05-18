@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat ao Vivo - Linkzam</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
     <style>
         :root {
             --whatsapp-bg: #e5ddd5;
@@ -27,7 +28,7 @@
 
         /* Lateral Esquerda */
         .sidebar-chat {
-            width: 350px;
+            width: 315px;
             background: var(--whatsapp-sidebar);
             border-right: 1px solid #ddd;
             display: flex;
@@ -113,64 +114,79 @@
 </head>
 <body>
 
-<div class="app-container">
-    <aside class="sidebar-chat">
-        <div class="chat-header">
-            <div class="avatar"></div>
-            <div class="header-icons">
-                <i class="fa-solid fa-circle-notch"></i>&nbsp;&nbsp;
-                <i class="fa-solid fa-message"></i>&nbsp;&nbsp;
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
-        </div>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>fetch('layout.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-root').innerHTML = html; }).then(()=>{ if(window.initializeLayout) initializeLayout(); });</script>
 
-        <div class="search-chat">
-            <input type="text" id="input-busca" placeholder="Pesquisar cliente ou usuário...">
-            <div id="search-results"></div>
-        </div>
-
-        <div class="contact-list">
-            <div class="contact-item">
-                <div class="avatar"></div>
-                <div class="contact-info">
-                    <h4>Suporte - Marcos</h4>
-                    <p>Pode me ajudar com o erro?</p>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main class="chat-window">
-        <header class="chat-header">
-            <div style="display: flex; align-items: center;">
-                <div class="avatar"></div>
-                <div style="margin-left: 15px;">
-                    <h4 id="chat-title-main" style="margin:0">Suporte - Marcos</h4>
-                    <small>online</small>
-                </div>
-            </div>
-            <div class="header-icons">
-                <i class="fa-solid fa-magnifying-glass"></i>&nbsp;&nbsp;
-                <i class="fa-solid fa-paperclip"></i>&nbsp;&nbsp;
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam &gt; Chat ao Vivo</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
         </header>
 
-        <div class="chat-messages" id="message-container">
-            <div class="message received">
-                Olá! Como posso configurar meu sistema Linkzam?
-                <div class="message-time">14:05</div>
+        <main class="content-view">
+            <div class="app-container">
+                <aside class="sidebar-chat">
+                    <div class="chat-header">
+                        <div class="avatar"></div>
+                        <div class="header-icons">
+                            <i class="fa-solid fa-circle-notch"></i>&nbsp;&nbsp;
+                            <i class="fa-solid fa-message"></i>&nbsp;&nbsp;
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </div>
+                    </div>
+
+                    <div class="search-chat">
+                        <input type="text" id="input-busca" placeholder="Pesquisar cliente ou usuário...">
+                        <div id="search-results"></div>
+                    </div>
+
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <div class="avatar"></div>
+                            <div class="contact-info">
+                                <h4>Suporte - Marcos</h4>
+                                <p>Pode me ajudar com o erro?</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <main class="chat-window">
+                    <header class="chat-header">
+                        <div style="display: flex; align-items: center;">
+                            <div class="avatar"></div>
+                            <div style="margin-left: 15px;">
+                                <h4 id="chat-title-main" style="margin:0">Suporte - Marcos</h4>
+                                <small>online</small>
+                            </div>
+                        </div>
+                        <div class="header-icons">
+                            <i class="fa-solid fa-magnifying-glass"></i>&nbsp;&nbsp;
+                            <i class="fa-solid fa-paperclip"></i>&nbsp;&nbsp;
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </div>
+                    </header>
+
+                    <div class="chat-messages" id="message-container">
+                        <div class="message received">
+                            Olá! Como posso configurar meu sistema Linkzam?
+                            <div class="message-time">14:05</div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area" id="input-section">
+                        <i class="fa-regular fa-face-smile"></i>
+                        <input type="text" id="main-chat-input" placeholder="Digite uma mensagem">
+                        <i class="fa-solid fa-microphone" id="btn-send"></i>
+                    </div>
+                </main>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <div class="chat-input-area" id="input-section">
-            <i class="fa-regular fa-face-smile"></i>
-            <input type="text" id="main-chat-input" placeholder="Digite uma mensagem">
-            <i class="fa-solid fa-microphone" id="btn-send"></i>
-        </div>
-    </main>
-</div>
-
+<script src="/socket.io/socket.io.js"></script>
 <script>
     (function() {
         // 1. Configurações Iniciais e URL
@@ -193,8 +209,39 @@
             const chatTitle = document.getElementById('chat-title-main');
             const inputSection = document.getElementById('input-section');
             const chatWindow = document.querySelector('.chat-window');
+            const headerEl = document.querySelector('header.chat-header') || document.querySelector('header');
+            // socket.io client
+            let socket;
+            const role = urlParams.get('role') || 'user'; // role=operator for operators
+            let currentTicket = null;
             
             if (chatTitle) chatTitle.innerText = chatId;
+
+            // add create-ticket button
+            const titleNode = document.querySelector('#chat-title-main');
+            if (titleNode) {
+                const btnCreate = document.createElement('button');
+                btnCreate.textContent = 'Criar Ticket';
+                btnCreate.style.marginLeft = '10px';
+                btnCreate.style.padding = '6px 8px';
+                btnCreate.style.borderRadius = '6px';
+                btnCreate.onclick = createTicketFromChat;
+                titleNode.parentNode.appendChild(btnCreate);
+            }
+
+            // connect socket
+            try {
+                socket = io();
+                socket.emit('chat:join', chatId);
+                socket.on('chat:message', (msg) => {
+                    appendMessage(msg);
+                });
+                socket.on('ticket:update', (t) => {
+                    if (t && t.chatId === chatId) showTicket(t);
+                });
+            } catch(e) {
+                console.warn('Socket.IO not available', e);
+            }
 
             // 3. Lógica de Modo Leitura vs Atendimento
             if (mode === 'read-only') {
@@ -220,6 +267,36 @@
             window.location.href = `chataovivo.html?id=${encodeURIComponent(id || 'Novo Chat')}`;
         };
 
+        // Helper: append message to container
+        function appendMessage(msg) {
+            const container = document.getElementById('message-container');
+            const cls = (msg.senderRole === 'operator' ? 'sent' : (msg.senderRole === 'user' ? 'sent' : 'received'));
+            const who = msg.sender || '';
+            const time = new Date(msg.createdAt || Date.now()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            const el = document.createElement('div');
+            el.className = `message ${cls}`;
+            el.innerHTML = `<strong style="display:block;font-size:0.8rem;margin-bottom:4px;">${who}</strong>${escapeHtml(msg.content)}<div class="message-time">${time}</div>`;
+            container.appendChild(el);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function showTicket(t) {
+            currentTicket = t;
+            // show ticket id in header
+            let el = document.getElementById('chat-ticket-info');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'chat-ticket-info';
+                el.style.marginLeft = '12px';
+                el.style.fontSize = '0.9rem';
+                const titleNode = document.querySelector('#chat-title-main');
+                if (titleNode && titleNode.parentNode) titleNode.parentNode.appendChild(el);
+            }
+            el.innerHTML = `#${t.id} - ${t.status} <button style="margin-left:8px;padding:6px 8px;border-radius:6px;" onclick="window.open('tickets.html?id=${t.id}','_blank')">Abrir</button>`;
+        }
+
         // 5. Lógica da Busca
         function setupSearch() {
             const input = document.getElementById('input-busca');
@@ -241,6 +318,17 @@
             });
         }
 
+        // 7. Criar ticket a partir do chat
+        function createTicketFromChat() {
+            const title = document.getElementById('chat-title-main')?.innerText || `Chat ${chatId}`;
+            fetch('/api/tickets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, chatId }) })
+                .then(r => r.json())
+                .then(t => {
+                    showTicket(t);
+                    alert('Ticket criado: #' + t.id);
+                });
+        }
+
         // 6. Envio de Mensagens
         function setupChatActions() {
             const input = document.getElementById('main-chat-input');
@@ -249,9 +337,33 @@
 
             const enviar = () => {
                 if (input.value.trim() === "") return;
+                const payload = {
+                    chatId,
+                    ticketId: currentTicket ? currentTicket.id : null,
+                    sender: (urlParams.get('user') || 'Operador'),
+                    senderRole: role,
+                    content: input.value
+                };
+
+                // emit via socket if available, fallback to HTTP
+                if (window.socket || typeof io !== 'undefined') {
+                    try {
+                        socket.emit('chat:message', payload);
+                    } catch (e) {
+                        // fallback
+                        fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    }
+                } else {
+                    fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                }
+
+                // immediate local UI
                 const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                container.innerHTML += `<div class="message sent">${input.value}<div class="message-time">${agora}</div></div>`;
-                input.value = "";
+                const el = document.createElement('div');
+                el.className = 'message sent';
+                el.innerHTML = `<div>${escapeHtml(payload.content)}<div class="message-time">${agora}</div></div>`;
+                container.appendChild(el);
+                input.value = '';
                 container.scrollTop = container.scrollHeight;
                 btn.classList.replace('fa-paper-plane', 'fa-microphone');
                 btn.style.color = '#54656f';

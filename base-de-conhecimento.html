@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Base de Conhecimento - Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        :root{--sidebar-width:225px;--header-height:60px;--primary:#2c3e50;--accent:#3498db}
+        *{box-sizing:border-box;font-family:Segoe UI,Arial}
+        body{display:flex;margin:0;height:100vh;background:#f4f7f6}
+        aside{width:var(--sidebar-width);background:var(--primary);color:#fff;padding:18px}
+        .logo{display:block;margin-bottom:18px}
+        nav a{display:block;color:#fff;text-decoration:none;padding:8px 0}
+        .main{flex:1;padding:20px}
+        header{height:var(--header-height);display:flex;align-items:center;justify-content:space-between;background:#fff;padding:0 16px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+        .card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,0.04);margin-top:16px}
+    </style>
+</head>
+<body>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>
+        fetch('layout.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-root').innerHTML = html; }).then(()=>{ if(window.initializeLayout) initializeLayout(); });
+    </script>
+
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam &gt; Base de Conhecimento</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
+        </header>
+
+        <main class="content-view">
+            <div class="card">
+                <h3>Artigos</h3>
+                <p>Área para criar e organizar artigos de conhecimento (guia, FAQs, procedimentos).</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

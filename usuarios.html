@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Usuários - Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        :root{--sidebar-width:225px}
+        *{box-sizing:border-box;font-family:Segoe UI,Arial}
+        body{display:flex;margin:0;height:100vh;background:#f4f7f6}
+        aside{width:var(--sidebar-width);background:#2c3e50;color:#fff;padding:18px}
+        .main{flex:1;padding:20px}
+        .card{background:#fff;padding:16px;border-radius:8px;margin-top:16px}
+    </style>
+</head>
+<body>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>
+        fetch('layout.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-root').innerHTML = html; }).then(()=>{ if(window.initializeLayout) initializeLayout(); });
+    </script>
+
+    <div class="main-container">
+        <header id="main-header">
+            <div class="breadcrumb">Linkzam &gt; Usuários</div>
+            <div id="date-display"></div>
+            <div>Operador: <strong>Admin</strong></div>
+        </header>
+
+        <main class="content-view">
+            <div class="card">
+                <h3>Lista de Usuários</h3>
+                <p>Gestão de contas de usuário (criar, editar, permissões).</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

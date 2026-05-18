@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sessão Remota</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body{font-family:Segoe UI,Arial;background:#f4f7f6;padding:20px}
+    .card{background:#fff;padding:16px;border-radius:8px;max-width:900px;margin:40px auto}
+    .status{margin-top:12px;color:#666}
+    .btn-close{background:#e74c3c;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2 id="title">Sessão Remota</h2>
+    <div id="info">Carregando sessão...</div>
+    <div class="status" id="status">Aguardando inicialização da sessão remota.</div>
+    <div style="margin-top:12px"><button class="btn-close" onclick="window.close()">Fechar Sessão</button></div>
+  </div>
+
+  <script>
+    function qs(name){ const params = new URLSearchParams(location.search); return params.get(name); }
+    const deviceId = qs('deviceId'); const name = qs('name') || 'dispositivo';
+    document.getElementById('title').innerText = `Sessão Remota — ${name}`;
+    document.getElementById('info').innerText = `Conectando ao dispositivo ID: ${deviceId || '-'}.`;
+    // try to poll backend for session status
+    (function poll(){
+      if(!deviceId) return document.getElementById('status').innerText = 'ID do dispositivo não informado.';
+      fetch('/api/remote/status?deviceId='+encodeURIComponent(deviceId)).then(r=>r.json()).then(s=>{
+        document.getElementById('status').innerText = s.status || 'Sessão pendente';
+      }).catch(()=>{ /* ignore */ });
+      setTimeout(poll,3000);
+    })();
+  </script>
+</body>
+</html>

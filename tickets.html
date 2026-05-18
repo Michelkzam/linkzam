@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
-            --sidebar-width: 250px;
+            --sidebar-width: 225px;
             --header-height: 60px;
             --primary-color: #2c3e50;
             --secondary-color: #34495e;
@@ -23,7 +23,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg-body); }
 
-        /* --- SIDEBAR ORIGINAL MANTIDA --- */
+        /* --- SIDEBAR --- */
         .sidebar { width: var(--sidebar-width); background-color: var(--primary-color); color: var(--text-color); display: flex; flex-direction: column; transition: all 0.3s ease; z-index: 100; }
         .sidebar-header { height: var(--header-height); display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.2); padding: 70px; position: relative; transition: all 0.3s ease; }
         .logo-sidebar { max-width: 140%; max-height: 140px; height: auto; transition: all 0.3s ease; }
@@ -46,7 +46,6 @@
         .sidebar.collapsed .menu-category { padding: 20px 0 10px; justify-content: center; }
         .sidebar.collapsed .menu-item { padding: 15px 0; justify-content: center; }
         .sidebar.collapsed .submenu .menu-item { padding-left: 0; }
-
         .toggle-btn { position: absolute; top: 15px; right: 15px; color: var(--text-color); font-size: 1.2rem; cursor: pointer; }
         .sidebar.collapsed .toggle-btn { position: relative; top: 0; right: 0; margin-bottom: 10px; }
 
@@ -71,12 +70,10 @@
         .stat-info h3 { font-size: 0.85rem; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
         .stat-info p { font-size: 1.8rem; font-weight: bold; color: var(--primary-color); }
         .stat-card i { font-size: 2.2rem; opacity: 0.2; }
-
         .border-tickets { border-color: var(--accent-color); }
         .border-online { border-color: var(--success); }
         .border-offline { border-color: var(--danger); }
         .border-alerts { border-color: var(--warning); }
-
         .bg-blue-light { background: #ebf5fb; color: #3498db; }
         .bg-green-light { background: #eafaf1; color: #27ae60; }
         .bg-yellow-light { background: #fef9e7; color: #f1c40f; }
@@ -87,7 +84,6 @@
         .search-wrapper { position: relative; flex: 1; min-width: 200px; }
         .search-wrapper input { width: 100%; padding: 8px 35px 8px 15px; border: 1px solid #ddd; border-radius: 20px; outline: none; font-size: 0.9rem; background: #fff; }
         .search-wrapper i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #95a5a6; }
-        
         .filter-select { padding: 7px 12px; border: 1px solid #ddd; border-radius: 20px; background: #fff; color: #7f8c8d; font-size: 0.85rem; cursor: pointer; outline: none; }
         .btn-new-ticket { padding: 8px 18px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-left: auto; }
 
@@ -96,109 +92,41 @@
         .table-custom { width: 100%; border-collapse: collapse; min-width: 900px; }
         .table-custom th { text-align: left; padding: 15px 10px; font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; border-bottom: 1px solid #eee; }
         .table-custom td { padding: 12px 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.85rem; color: #2c3e50; vertical-align: middle; }
-        
         .ticket-id { color: #e74c3c; font-weight: bold; }
         .client-info b { display: block; font-size: 0.85rem; }
         .client-info span { font-size: 0.75rem; color: #95a5a6; }
-        
         .action-btns { display: flex; gap: 5px; }
         .btn-action { width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; border: none; font-size: 0.8rem; }
         .btn-view { background: #f1c40f; }
         .btn-play { background: #27ae60; }
         .btn-edit { background: #3498db; }
         .btn-transfer { background: #e67e22; }
-        .btn-finish {     background: #e74c3c; }
-        
-        /* Efeito de hover para manter a interatividade */
-        .btn-action:hover {
-            opacity: 0.8;
-            transform: scale(1.05);
-        }
+        .btn-finish { background: #e74c3c; }
+        .btn-action:hover { opacity: 0.8; transform: scale(1.05); }
 
-        /* Cores Menu */
+        /* --- CLASSES AUXILIARES --- */
         .clr-principal { color: #1abc9c !important; } .clr-helpdesk { color: #3498db !important; }  
         .clr-rmm { color: #e67e22 !important; } .clr-cadastros { color: #9b59b6 !important; } 
         .clr-sincronizar { color: #f1c40f !important; } .clr-config { color: #95a5a6 !important; }    
         .clr-perfil { color: #e74c3c !important; }
+
+        /* --- MODAL --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: white; width: 450px; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .close-btn { cursor: pointer; font-size: 24px; color: #999; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn-salvar { width: 100%; padding: 12px; background: #27ae60; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-salvar:hover { background: #219150; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-bars toggle-btn" id="toggle-menu-btn" title="Alternar Menu"></i>
-            <img src="logolinkzam2.png" alt="Logo" class="logo-sidebar" id="logo-sidebar">
-        </div>
-        
-        <nav class="sidebar-menu">
-            <div id="cat-principal" class="menu-category clr-principal" onclick="toggleSubmenu('sub-principal', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-house category-icon"></i> <span>Principal</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-principal">
-                <a href="index.html" class="menu-item active"><i class="fa-solid fa-chart-line"></i> <span>&nbsp; Dashboard</span></a>
-            </div>
-            
-            <div id="cat-helpdesk" class="menu-category clr-helpdesk" onclick="toggleSubmenu('sub-helpdesk', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-headset category-icon"></i> <span>Help Desk</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-helpdesk">
-                <a href="tickets.html" class="menu-item"><i class="fa-solid fa-ticket"></i> <span>&nbsp; Tickets</span></a>
-                <a href="chats.html" class="menu-item"><i class="fa-solid fa-comments"></i> <span>&nbsp; Chats</span></a>
-                <a href="kb.html" class="menu-item"><i class="fa-solid fa-book"></i> <span>&nbsp; Base de Conhecimento</span></a>
-                <a href="clientes.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Clientes/SLA</span></a>
-                <a href="Usuários.html" class="menu-item"><i class="fa-solid fa-users"></i> <span>&nbsp; Usuários</span></a>
-                <a href="operadores.html" class="menu-item"><i class="fa-solid fa-headset"></i> <span>&nbsp; Operadores</span></a>
-                
-            </div>
-            
-            <div id="cat-rmm" class="menu-category clr-rmm" onclick="toggleSubmenu('sub-rmm', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-server category-icon"></i> <span>RMM</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-rmm">
-                <a href="dispositivos.html" class="menu-item"><i class="fa-solid fa-desktop"></i> <span>&nbsp; Dispositivos</span></a>
-                <a href="alertas.html" class="menu-item"><i class="fa-solid fa-triangle-exclamation"></i> <span>&nbsp; Alertas</span></a>
-                <a href="scripts.html" class="menu-item"><i class="fa-solid fa-terminal"></i> <span>&nbsp; Scripts/Automação</span></a>
-                <a href="inventario.html" class="menu-item"><i class="fa-solid fa-boxes-stacked"></i> <span>&nbsp; Inventário</span></a>
-            </div>
-
-            <div id="cat-cadastros" class="menu-category clr-cadastros" onclick="toggleSubmenu('sub-cadastros', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-address-book category-icon"></i> <span>Cadastros</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-cadastros">
-                <a href="cadastros.html" class="menu-item"><i class="fa-solid fa-address-book"></i> <span>&nbsp; Cadastros Gerais</span></a>
-            </div>
-
-            <div id="cat-sincronizar" class="menu-category clr-sincronizar" onclick="toggleSubmenu('sub-sincronizar', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-rotate category-icon"></i> <span>Sincronizar</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-sincronizar">
-                <a href="sincronizar.html" class="menu-item"><i class="fa-solid fa-rotate"></i> <span>&nbsp; Sincronização</span></a>
-            </div>
-            
-            <div id="cat-config" class="menu-category clr-config" onclick="toggleSubmenu('sub-config', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-gear category-icon"></i> <span>Configurações</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-config">
-                <a href="config_sistema.html" class="menu-item"><i class="fa-solid fa-sliders"></i> <span>&nbsp; Sistema</span></a>
-                <a href="config_usuarios.html" class="menu-item"><i class="fa-solid fa-user-gear"></i> <span>&nbsp; Usuários</span></a>
-                <a href="config_operadores.html" class="menu-item"><i class="fa-solid fa-user-tie"></i> <span>&nbsp; Operadores</span></a>
-            </div>
-
-            <div id="cat-perfil" class="menu-category clr-perfil" onclick="toggleSubmenu('sub-perfil', this)">
-                <span class="menu-category-text"><i class="fa-solid fa-circle-user category-icon"></i> <span>Perfil</span></span>
-                <i class="fa-solid fa-chevron-down submenu-toggle-icon"></i>
-            </div>
-            <div class="submenu" id="sub-perfil">
-                <a href="perfil.html" class="menu-item"><i class="fa-solid fa-circle-user"></i> <span>&nbsp; Meu Perfil e Tema</span></a>
-            </div>
-        </nav>
-    </aside>
+    <script src="assets/layout.js"></script>
+    <div id="sidebar-root"></div>
+    <script>fetch('layout.html').then(r=>r.text()).then(html=>{ document.getElementById('sidebar-root').innerHTML = html; }).then(()=>{ if(window.initializeLayout) initializeLayout(); });</script>
 
     <div class="main-container">
         <header id="main-header">
@@ -227,6 +155,12 @@
                 </div>
             </div>
 
+            <!-- Kanban Board -->
+            <section class="card" style="margin-bottom:16px;">
+                <h3 style="margin:0 0 8px 0">Quadro Kanban - Tickets</h3>
+                <div id="kanban" style="display:flex;gap:12px;margin-top:12px;"></div>
+            </section>
+
             <div class="filter-bar">
                 <div class="search-wrapper">
                     <input type="text" placeholder="Buscar ticket...">
@@ -237,7 +171,7 @@
                 <select class="filter-select"><option>Status</option></select>
                 <select class="filter-select"><option>Clientes</option></select>
                 <select class="filter-select"><option>Operador</option></select>
-                <button class="btn-new-ticket">+ Novo Ticket</button>
+                <button class="btn-new-ticket" onclick="abrirModalTicket()">+ Novo Ticket</button>
             </div>
 
             <div class="card-table">
@@ -256,7 +190,7 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tabela-tickets-body">
                         <tr>
                             <td><input type="checkbox"></td>
                             <td class="ticket-id">#3466</td>
@@ -266,12 +200,12 @@
                             </td>
                             <td>Erro no Backup Nuvem</td>
                             <td>Acesso Remoto</td>
-                            <td><i class="fa-solid fa-angles-up" position="center" style="color: #e74c3c;"></i></td>
-                            <td><i class="fa-solid fa-circle-check" position="center" style="color: #2c3e50;"></i></td>
+                            <td><i class="fa-solid fa-angles-up" style="color: #e74c3c;"></i></td>
+                            <td><i class="fa-solid fa-circle-check" style="color: #2c3e50;"></i></td>
                             <td>Michel Kzam</td>
                             <td>há 2 horas</td>
                             <td>
-                               <div class="action-btns">
+                                <div class="action-btns">
                                     <button class="btn-action btn-view" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
                                     <button class="btn-action btn-play" title="Iniciar"><i class="fa-solid fa-play"></i></button>
                                     <button class="btn-action btn-edit" title="Editar"><i class="fa-solid fa-pen"></i></button>
@@ -285,8 +219,41 @@
             </div>                     
         </main>
     </div>
+    
+    <div id="modalTicket" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Abertura de Novo Ticket</h3>
+                <span class="close-btn" onclick="fecharModalTicket()">&times;</span>
+            </div>
+            <form id="formNovoTicket">
+                <div class="form-group">
+                    <label>Assunto:</label>
+                    <input type="text" id="assunto" placeholder="Ex: Erro ao acessar painel" required>
+                </div>
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <input type="text" id="cliente" placeholder="Nome do cliente" required>
+                </div>
+                <div class="form-group">
+                    <label>Departamento:</label>
+                    <select id="departamento">
+                        <option value="Suporte Técnico">Suporte Técnico</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Vendas">Vendas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descrição do Problema:</label>
+                    <textarea id="descricao" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn-salvar">Criar e Atender</button>
+            </form>
+        </div>
+    </div>
 
     <script>
+        // --- FUNÇÕES DE INTERFACE E SIDEBAR ---
         function atualizarData() {
             const op = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const dateElem = document.getElementById('date-display');
@@ -316,134 +283,203 @@
             const sidebar = document.getElementById('sidebar');
             const logo = document.getElementById('logo-sidebar');
             const isCollapsed = sidebar.classList.contains('collapsed');
-
-            // Ajuste da Logo
             if(logo) {
                 logo.style.maxWidth = isCollapsed ? '45px' : '140%';
                 logo.style.maxHeight = isCollapsed ? '45px' : '140px';
             }
-
-            // Ajuste dos Titles (Nomes das seções no mouse)
-            document.querySelectorAll('.menu-category').forEach(cat => {
-                const txt = cat.querySelector('.menu-category-text span')?.innerText;
-                cat.setAttribute('title', isCollapsed ? txt : "");
-            });
-
-            document.querySelectorAll('.menu-item').forEach(item => {
-                const txt = item.querySelector('span')?.innerText.trim();
-                item.setAttribute('title', isCollapsed ? txt : "");
-            });
         }
 
-        // Único Event Listener para o botão de fechar/abrir
         document.getElementById('toggle-menu-btn').addEventListener('click', function() {
             document.getElementById('sidebar').classList.toggle('collapsed');
             handleSidebarState(); 
         });
 
-        window.onload = () => {
-            atualizarData();
-            handleSidebarState();
-            
-            // Abre o Helpdesk por padrão
-            const catHelp = document.getElementById('cat-helpdesk');
-            const subHelp = document.getElementById('sub-helpdesk');
-            if(subHelp) subHelp.classList.add('open');
-            pintarHeader(catHelp);
-        };
-
-                    // Função genérica para capturar o ID do chat da linha da tabela
+        // --- FUNÇÕES DE AÇÃO DOS TICKETS ---
         function getChatId(btn) {
             return btn.closest('tr').querySelector('.ticket-id').innerText;
         }
 
-        // 1. Visualizar Chat
         function visualizarChat(id) {
-            Swal.fire({
-                title: `Visualizando ${id}`,
-                text: "Aqui você abriria o histórico completo ou detalhes do cliente.",
-                icon: 'info',
-                confirmButtonColor: '#3498db'
-            });
+            Swal.fire({ title: `Visualizando ${id}`, text: "Detalhes do ticket e histórico do cliente.", icon: 'info', confirmButtonColor: '#3498db' });
         }
 
-        // 2. Iniciar/Assumir Chat
         function iniciarChat(id) {
             Swal.fire({
                 title: 'Assumir atendimento?',
-                text: `Você será registrado como o operador do ${id}`,
+                text: `Você será o operador do ${id}`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: 'Sim, iniciar',
                 confirmButtonColor: '#27ae60'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Iniciado!', 'O chat agora está sob sua responsabilidade.', 'success');
-                }
+                if (result.isConfirmed) Swal.fire('Iniciado!', 'Atendimento em andamento.', 'success');
             });
         }
 
-        // 3. Editar Dados
         function editarChat(id) {
-            Swal.fire({
-                title: 'Editar Informações',
-                input: 'text',
-                inputLabel: `Alterar assunto do ${id}`,
-                showCancelButton: true,
-                confirmButtonColor: '#3498db'
-            });
+            Swal.fire({ title: 'Editar Informações', input: 'text', inputLabel: `Alterar assunto do ${id}`, showCancelButton: true, confirmButtonColor: '#3498db' });
         }
 
-        // 4. Transferir Atendimento
         function transferirChat(id) {
             Swal.fire({
                 title: 'Transferir Chat',
                 input: 'select',
-                inputOptions: {
-                    'suporte': 'Suporte Nível 2',
-                    'financeiro': 'Financeiro',
-                    'vendas': 'Vendas'
-                },
+                inputOptions: { 'suporte': 'Suporte Nível 2', 'financeiro': 'Financeiro', 'vendas': 'Vendas' },
                 inputPlaceholder: 'Selecione o departamento',
                 showCancelButton: true,
                 confirmButtonColor: '#f39c12'
             }).then((result) => {
-                if (result.value) {
-                    Swal.fire('Transferido!', `Enviado para ${result.value}`, 'success');
-                }
+                if (result.value) Swal.fire('Transferido!', `Enviado para ${result.value}`, 'success');
             });
         }
 
-        // 5. Finalizar Atendimento
         function finalizarChat(id) {
             Swal.fire({
                 title: 'Concluir atendimento?',
-                text: "O chat será movido para o histórico de encerrados.",
+                text: "O ticket será movido para o histórico.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sim, finalizar',
                 confirmButtonColor: '#e74c3c'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire('Finalizado!', 'Atendimento encerrado com sucesso.', 'success');
-                }
+                if (result.isConfirmed) Swal.fire('Finalizado!', 'Atendimento encerrado.', 'success');
             });
         }
 
-        // Vinculando os cliques (Exemplo via Listeners)
+        // --- DELEGAÇÃO DE EVENTOS ---
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.btn-action');
             if (!btn) return;
-
             const id = getChatId(btn);
-
             if (btn.classList.contains('btn-view')) visualizarChat(id);
             if (btn.classList.contains('btn-play')) iniciarChat(id);
             if (btn.classList.contains('btn-edit')) editarChat(id);
             if (btn.classList.contains('btn-transfer')) transferirChat(id);
             if (btn.classList.contains('btn-finish')) finalizarChat(id);
         });
-        
+
+        // --- CONTROLE DO MODAL ---
+        function abrirModalTicket() { document.getElementById('modalTicket').style.display = 'flex'; }
+        function fecharModalTicket() { document.getElementById('modalTicket').style.display = 'none'; }
+
+        // --- LÓGICA DE CRIAÇÃO DO NOVO TICKET ---
+        document.getElementById('formNovoTicket').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const assunto = document.getElementById('assunto').value;
+            const cliente = document.getElementById('cliente').value;
+            const depto = document.getElementById('departamento').value;
+            const idTicket = "#" + Math.floor(1000 + Math.random() * 9000);
+
+            const novaLinha = `
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td class="ticket-id">${idTicket}</td>
+                    <td class="client-info">
+                        <b>${cliente.toUpperCase()}</b>
+                        <span>contato@cliente.com</span>
+                    </td>
+                    <td>${assunto}</td>
+                    <td>${depto}</td>
+                    <td><i class="fa-solid fa-angles-up" style="color: #f39c12;"></i></td>
+                    <td><i class="fa-solid fa-circle-dot" style="color: #3498db;"></i></td>
+                    <td>Admin</td>
+                    <td>Agora mesmo</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-action btn-view" title="Visualizar"><i class="fa-solid fa-eye"></i></button>
+                            <button class="btn-action btn-play" title="Iniciar"><i class="fa-solid fa-play"></i></button>
+                            <button class="btn-action btn-edit" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn-action btn-transfer" title="Transferir"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                            <button class="btn-action btn-finish" title="Finalizar"><i class="fa-solid fa-check-double"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+
+            document.getElementById('tabela-tickets-body').insertAdjacentHTML('afterbegin', novaLinha);
+            fecharModalTicket();
+            
+            Swal.fire({
+                title: 'Ticket Gerado!',
+                text: `O ticket ${idTicket} foi adicionado. Deseja iniciar o atendimento agora?`,
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Ir para o Chat',
+                cancelButtonText: 'Ficar na lista'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.open(`chataovivo.html?id=${encodeURIComponent(cliente)}`, '_blank');
+                }
+            });
+
+            this.reset();
+        });
+
+        // --- Kanban Board Logic (fetch tickets and enable drag/drop) ---
+        (function(){
+            const statuses = ['Novo','Em Progresso','Aguardando Cliente','Resolvido','Fechado'];
+            const kanbanContainer = document.getElementById('kanban');
+            if (!kanbanContainer) return;
+            // create columns
+            statuses.forEach(s => {
+                const col = document.createElement('div');
+                col.style.flex = '1';
+                col.style.minWidth = '180px';
+                col.style.background = '#f8f9fb';
+                col.style.border = '1px solid #eee';
+                col.style.borderRadius = '6px';
+                col.style.padding = '8px';
+                col.innerHTML = `<h4 style="font-size:0.9rem;margin:0 0 8px 0">${s}</h4><div class="col-list" data-status="${s}" style="min-height:120px"></div>`;
+                kanbanContainer.appendChild(col);
+            });
+
+            function loadKanban(){
+                fetch('/api/tickets').then(r=>r.json()).then(tickets=>{
+                    document.querySelectorAll('.col-list').forEach(c=>c.innerHTML='');
+                    tickets.forEach(t=>{
+                        const card = document.createElement('div');
+                        card.className = 'kanban-card';
+                        card.draggable = true;
+                        card.style.padding = '8px';
+                        card.style.marginBottom = '8px';
+                        card.style.border = '1px solid #ddd';
+                        card.style.borderRadius = '6px';
+                        card.dataset.id = t.id;
+                        card.innerHTML = `<strong>#${t.id}</strong> ${t.title} <div style="font-size:0.8rem;color:#666">${t.priority || ''}</div>`;
+                        const target = document.querySelector(`.col-list[data-status="${t.status}"]`);
+                        (target || document.querySelector('.col-list')).appendChild(card);
+                        card.addEventListener('dragstart', (e)=>{ e.dataTransfer.setData('text/plain', t.id); });
+                    });
+                });
+            }
+
+            document.addEventListener('dragover', e=>e.preventDefault());
+            document.addEventListener('drop', e=>{
+                e.preventDefault();
+                const id = e.dataTransfer.getData('text/plain');
+                const el = document.elementFromPoint(e.clientX, e.clientY);
+                const col = el && el.closest('.col-list');
+                if (col && id) {
+                    const status = col.dataset.status;
+                    fetch('/api/tickets/' + id, { method: 'PATCH', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ status }) }).then(()=>loadKanban());
+                }
+            });
+
+            // initial load
+            loadKanban();
+        })();
+
+        window.onload = () => {
+            atualizarData();
+            handleSidebarState();
+            const subHelp = document.getElementById('sub-helpdesk');
+            if(subHelp) subHelp.classList.add('open');
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('modalTicket');
+            if (event.target == modal) fecharModalTicket();
+        };
     </script>
 </body>
 </html>

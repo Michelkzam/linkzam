@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Clientes - Linkzam</title>
+    <style> body{font-family:Segoe UI,Arial;padding:20px;background:#f4f7f6} .card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.05)} label{display:block;margin-top:8px} input,select{width:100%;padding:8px;margin-top:6px;border:1px solid #ddd;border-radius:6px} button{margin-top:10px;padding:10px 14px;border-radius:6px;background:#3498db;color:#fff;border:none}</style>
+ </head>
+<body>
+    <div class="card">
+        <h2>Clientes</h2>
+        <form id="formCliente">
+            <label>Nome</label>
+            <input id="nome" required>
+            <label>CNPJ</label>
+            <input id="cnpj">
+            <label>Plano SLA</label>
+            <select id="sla"><option value="Bronze">Bronze</option><option value="Prata">Prata</option><option value="Ouro">Ouro</option></select>
+            <button type="submit">Criar Cliente</button>
+        </form>
+        <h3 style="margin-top:18px">Lista de Clientes</h3>
+        <div id="lista"></div>
+    </div>
+
+    <script>
+        function load(){ fetch('/api/clients').then(r=>r.json()).then(d=>{ const out=document.getElementById('lista'); out.innerHTML=''; d.forEach(c=>{ const el=document.createElement('div'); el.style.padding='8px'; el.style.borderBottom='1px solid #eee'; el.innerHTML = `<strong>${c.name}</strong> <div style='font-size:0.9rem;color:#666'>CNPJ: ${c.cnpj||'-'} • SLA: ${c.slaPlan||'-'}</div>`; out.appendChild(el); }); }); }
+        document.getElementById('formCliente').addEventListener('submit', function(e){ e.preventDefault(); fetch('/api/clients',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ name: document.getElementById('nome').value, cnpj: document.getElementById('cnpj').value, slaPlan: document.getElementById('sla').value })}).then(()=>{ this.reset(); load(); }); });
+        load();
+    </script>
+</body>
+</html>
