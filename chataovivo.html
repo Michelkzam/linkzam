@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat ao Vivo - Linkzam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --whatsapp-bg: #e5ddd5;
+            --whatsapp-header: #ededed;
+            --whatsapp-sidebar: #ffffff;
+            --my-message: #dcf8c6;
+            --other-message: #ffffff;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+        }
+
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #dadbd3; overflow: hidden; }
+
+        .app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        /* Lateral Esquerda */
+        .sidebar-chat {
+            width: 350px;
+            background: var(--whatsapp-sidebar);
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .chat-header {
+            height: 60px;
+            background: var(--whatsapp-header);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: space-between;
+        }
+
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #ccc; }
+
+        .search-chat { padding: 10px; background: #f6f6f6; position: relative; }
+        .search-chat input {
+            width: 100%; padding: 8px 15px; border-radius: 20px;
+            border: none; outline: none; background: #fff; box-sizing: border-box;
+        }
+
+        /* Painel de Resultados da Busca */
+        #search-results {
+            display: none; background: white; border: 1px solid #ddd;
+            position: absolute; width: 92%; left: 4%; z-index: 1000;
+            max-height: 250px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-top: 5px; border-radius: 8px;
+        }
+
+        .contact-list { flex: 1; overflow-y: auto; }
+        .contact-item {
+            display: flex; padding: 12px 15px; border-bottom: 1px solid #f2f2f2;
+            cursor: pointer; transition: 0.3s;
+        }
+        .contact-item:hover { background: #ebebeb; }
+        .contact-info { margin-left: 15px; flex: 1; }
+        .contact-info h4 { margin: 0; font-size: 0.95rem; color: #333; }
+        .contact-info p { margin: 3px 0 0; font-size: 0.8rem; color: #666; }
+
+        /* Janela de Chat Direita */
+        .chat-window {
+            flex: 1; display: flex; flex-direction: column;
+            background-color: var(--whatsapp-bg);
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        }
+
+        .chat-messages {
+            flex: 1; padding: 20px 50px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .message {
+            max-width: 60%; padding: 8px 12px; border-radius: 8px;
+            font-size: 0.9rem; position: relative; box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        .sent { align-self: flex-end; background: var(--my-message); }
+        .received { align-self: flex-start; background: var(--other-message); }
+        .message-time { font-size: 0.7rem; color: #888; text-align: right; margin-top: 4px; }
+
+        /* Barra de Digitação e Banner */
+        .chat-input-area {
+            height: 62px; background: var(--whatsapp-header);
+            display: flex; align-items: center; padding: 0 15px; gap: 15px;
+        }
+        .chat-input-area input { flex: 1; padding: 10px 15px; border-radius: 25px; border: none; outline: none; }
+        .chat-input-area i { color: #54656f; font-size: 1.3rem; cursor: pointer; }
+
+        .readonly-banner {
+            background: #fff3cd; color: #856404; text-align: center;
+            padding: 12px; font-size: 14px; border-top: 2px solid #ffeeba;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+        }
+        .btn-assumir-direto {
+            background-color: #27ae60; color: white; border: none;
+            padding: 6px 12px; border-radius: 4px; cursor: pointer;
+            font-weight: bold; font-size: 12px; transition: 0.2s;
+        }
+        .btn-assumir-direto:hover { background-color: #219150; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <aside class="sidebar-chat">
+        <div class="chat-header">
+            <div class="avatar"></div>
+            <div class="header-icons">
+                <i class="fa-solid fa-circle-notch"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-message"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+        </div>
+
+        <div class="search-chat">
+            <input type="text" id="input-busca" placeholder="Pesquisar cliente ou usuário...">
+            <div id="search-results"></div>
+        </div>
+
+        <div class="contact-list">
+            <div class="contact-item">
+                <div class="avatar"></div>
+                <div class="contact-info">
+                    <h4>Suporte - Marcos</h4>
+                    <p>Pode me ajudar com o erro?</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="chat-window">
+        <header class="chat-header">
+            <div style="display: flex; align-items: center;">
+                <div class="avatar"></div>
+                <div style="margin-left: 15px;">
+                    <h4 id="chat-title-main" style="margin:0">Suporte - Marcos</h4>
+                    <small>online</small>
+                </div>
+            </div>
+            <div class="header-icons">
+                <i class="fa-solid fa-magnifying-glass"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-paperclip"></i>&nbsp;&nbsp;
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+        </header>
+
+        <div class="chat-messages" id="message-container">
+            <div class="message received">
+                Olá! Como posso configurar meu sistema Linkzam?
+                <div class="message-time">14:05</div>
+            </div>
+        </div>
+
+        <div class="chat-input-area" id="input-section">
+            <i class="fa-regular fa-face-smile"></i>
+            <input type="text" id="main-chat-input" placeholder="Digite uma mensagem">
+            <i class="fa-solid fa-microphone" id="btn-send"></i>
+        </div>
+    </main>
+</div>
+
+<script>
+    (function() {
+        // 1. Configurações Iniciais e URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const chatId = urlParams.get('id') ? decodeURIComponent(urlParams.get('id')) : "Novo Chat";
+
+        // Ajusta Título da Aba
+        document.title = (mode === 'read-only' ? "Visualizando: " : "Chat: ") + chatId + " - Linkzam";
+
+        // 2. Base de Dados para Busca
+        const baseDados = [
+            { nome: "Marcos Vinicius", tipo: "Cliente" },
+            { nome: "Admin - Linkzam", tipo: "Usuário" },
+            { nome: "Ana Paula", tipo: "Cliente" },
+            { nome: "Michel Kzam", tipo: "Usuário" }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const chatTitle = document.getElementById('chat-title-main');
+            const inputSection = document.getElementById('input-section');
+            const chatWindow = document.querySelector('.chat-window');
+            
+            if (chatTitle) chatTitle.innerText = chatId;
+
+            // 3. Lógica de Modo Leitura vs Atendimento
+            if (mode === 'read-only') {
+                inputSection.style.display = 'none'; // Esconde barra de digitação
+                
+                const aviso = document.createElement('div');
+                aviso.className = 'readonly-banner';
+                aviso.innerHTML = `
+                    <span><i class="fa-solid fa-eye"></i> Modo de Visualização (Apenas Leitura)</span>
+                    <button class="btn-assumir-direto" onclick="assumirEsteChat()">Deseja assumir este chat?</button>
+                `;
+                chatWindow.appendChild(aviso);
+            } else {
+                setupChatActions(); // Ativa envio de mensagens
+            }
+
+            setupSearch(); // Ativa a busca
+        });
+
+        // 4. Função Assumir Chat
+        window.assumirEsteChat = function() {
+            const id = urlParams.get('id');
+            window.location.href = `chataovivo.html?id=${encodeURIComponent(id || 'Novo Chat')}`;
+        };
+
+        // 5. Lógica da Busca
+        function setupSearch() {
+            const input = document.getElementById('input-busca');
+            const results = document.getElementById('search-results');
+
+            input.addEventListener('input', () => {
+                const termo = input.value.toLowerCase().trim();
+                if (termo.length > 0) {
+                    const filtrados = baseDados.filter(i => i.nome.toLowerCase().includes(termo));
+                    results.style.display = 'block';
+                    results.innerHTML = filtrados.map(i => `
+                        <div style="padding:10px; cursor:pointer; border-bottom:1px solid #eee;" onclick="window.open('chataovivo.html?id=${encodeURIComponent(i.nome)}', '_blank')">
+                            <strong>${i.nome}</strong> <br> <small>${i.tipo}</small>
+                        </div>
+                    `).join('') || '<div style="padding:10px; color:#999;">Nada encontrado</div>';
+                } else {
+                    results.style.display = 'none';
+                }
+            });
+        }
+
+        // 6. Envio de Mensagens
+        function setupChatActions() {
+            const input = document.getElementById('main-chat-input');
+            const btn = document.getElementById('btn-send');
+            const container = document.getElementById('message-container');
+
+            const enviar = () => {
+                if (input.value.trim() === "") return;
+                const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                container.innerHTML += `<div class="message sent">${input.value}<div class="message-time">${agora}</div></div>`;
+                input.value = "";
+                container.scrollTop = container.scrollHeight;
+                btn.classList.replace('fa-paper-plane', 'fa-microphone');
+                btn.style.color = '#54656f';
+            };
+
+            input.addEventListener('input', () => {
+                if (input.value.length > 0) {
+                    btn.classList.replace('fa-microphone', 'fa-paper-plane');
+                    btn.style.color = '#00a884';
+                } else {
+                    btn.classList.replace('fa-paper-plane', 'fa-microphone');
+                    btn.style.color = '#54656f';
+                }
+            });
+
+            input.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
+            btn.addEventListener('click', enviar);
+        }
+    })();
+</script>
+</body>
+</html>

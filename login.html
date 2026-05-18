@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Linkzam RMM & HelpDesk</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary-bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --brand-color: #2c3e50;
+            --accent-color: #3498db;
+            --border-color: #dddfe2;
+            --microsoft-blue: #00a1f1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+        body {
+            background-color: var(--primary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo-area { margin-bottom: 20px; display: flex; justify-content: center; }
+        .logo-img { max-width: 180px; height: auto; }
+
+        .welcome-text { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
+
+        .form-group { text-align: left; margin-bottom: 15px; }
+        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: var(--text-muted); text-transform: uppercase; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        input:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #005a7d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .divider { display: flex; align-items: center; margin: 25px 0; color: var(--text-muted); font-size: 12px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        /* Container para centralizar o botão do Google */
+        .sso-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-microsoft {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-area">
+            <img src="logolinkzam.png" alt="Linkzam Logo" class="logo-img">
+        </div>
+
+        <p class="welcome-text">Acesso Restrito - Monitoramento Linkzam</p>
+
+        <form action="dashboard.html">
+            <div class="form-group">
+                <label>E-mail ou Usuário</label>
+                <input type="text" placeholder="nome@empresa.com.br" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-login">Entrar no Sistema</button>
+        </form>
+
+        <div class="divider">ou entre com</div>
+
+        <div class="sso-group">
+            <div id="g_id_onload"
+                 data-client_id="SEU_CLIENT_ID_AQUI.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left"
+                 data-width="320">
+            </div>
+
+            <a href="#" class="btn-microsoft">
+                <span style="color: #00a1f1;">⊞</span> Microsoft Azure AD
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Função que processa a resposta do login do Google
+        function handleCredentialResponse(response) {
+            console.log("Token JWT do Google: " + response.credential);
+            // Aqui você enviaria 'response.credential' para seu backend validar
+            alert("Login Google iniciado! Redirecionando...");
+            window.location.href = "dashboard.html";
+        }
+    </script>
+
+</body>
+</html>
