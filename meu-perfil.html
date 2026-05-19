@@ -9,10 +9,38 @@
     <style>
         :root{--sidebar-width:225px}
         body{display:flex;margin:0;height:100vh;font-family:Segoe UI,Arial;background:#f4f7f6}
-        aside{width:var(--sidebar-width);background:#2c3e50;color:#fff;padding:18px}
-        .main{flex:1;padding:20px}
-        .card{background:#fff;padding:16px;border-radius:8px}
-        label{display:block;margin-top:8px}
+        body.dark-theme{background:#1a1a1a;color:#fff}
+        aside{width:var(--sidebar-width);background:#2c3e50;color:#fff;padding:18px;overflow-y:auto}
+        .main{flex:1;padding:20px;overflow-y:auto}
+        .card{background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
+        body.dark-theme .card{background:#2d2d2d;color:#fff}
+        label{display:block;margin-top:12px;font-weight:500;color:#333}
+        body.dark-theme label{color:#e0e0e0}
+        input,select{width:100%;padding:8px;margin-top:4px;border:1px solid #ddd;border-radius:4px;font-size:14px;box-sizing:border-box}
+        body.dark-theme input,body.dark-theme select{background:#3d3d3d;color:#fff;border-color:#555}
+        input:focus,select:focus{outline:none;border-color:#007bff;box-shadow:0 0 4px rgba(0,123,255,0.5)}
+        button{padding:10px 20px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;margin-top:12px;transition:background 0.3s}
+        button:hover{background:#0056b3}
+        button.secondary{background:#6c757d}
+        button.secondary:hover{background:#545b62}
+        button:disabled{background:#ccc;cursor:not-allowed}
+        .button-group{display:flex;gap:8px;margin-top:16px}
+        .alert{padding:12px;border-radius:4px;margin-bottom:12px;display:none}
+        .alert.show{display:block}
+        .alert.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb}
+        .alert.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+        .alert.info{background:#d1ecf1;color:#0c5460;border:1px solid #bee5eb}
+        body.dark-theme .alert.success{background:#1e4620;color:#90ee90}
+        body.dark-theme .alert.error{background:#4a1a1a;color:#ff6b6b}
+        body.dark-theme .alert.info{background:#1a3a3a;color:#87ceeb}
+        .profile-header{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+        .avatar{width:80px;height:80px;border-radius:50%;background:#ddd;display:flex;align-items:center;justify-content:center;font-size:40px}
+        body.dark-theme .avatar{background:#444}
+        .profile-info h2{margin:0}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        @media (max-width:768px){.form-row{grid-template-columns:1fr}}
+        .spinner{display:inline-block;width:16px;height:16px;border:3px solid #f3f3f3;border-top:3px solid #007bff;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
     </style>
 </head>
 <body>
@@ -26,20 +54,297 @@
         <header id="main-header">
             <div class="breadcrumb">Linkzam &gt; Meu Perfil</div>
             <div id="date-display"></div>
-            <div>Operador: <strong>Admin</strong></div>
+            <div>Operador: <strong id="operator-name">Admin</strong></div>
         </header>
 
         <main class="content-view">
+            <div id="alert-container"></div>
+
             <div class="card" style="margin-top:12px">
-                <label>Nome</label>
-                <input>
-                <label>E-mail</label>
-                <input>
-                <label>Tema</label>
-                <select><option>Claro</option><option>Escuro</option></select>
-                <div style="margin-top:12px"><button>Salvar</button></div>
+                <div class="profile-header">
+                    <div class="avatar" id="user-avatar">👤</div>
+                    <div class="profile-info">
+                        <h2 id="profile-name">Carregando...</h2>
+                        <p id="profile-email" style="margin:4px 0;color:#666">-</p>
+                        <small id="profile-joined" style="color:#999">-</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+                <h3>Configurações da Conta</h3>
+                <form id="profile-form">
+                    <div class="form-row">
+                        <div>
+                            <label for="nome">Nome Completo <span style="color:red">*</span></label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div>
+                            <label for="email">E-mail <span style="color:red">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="telefone">Telefone</label>
+                            <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999">
+                        </div>
+                        <div>
+                            <label for="empresa">Empresa</label>
+                            <input type="text" id="empresa" name="empresa">
+                        </div>
+                    </div>
+
+                    <label for="tema">Tema Visual</label>
+                    <select id="tema" name="tema">
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                    </select>
+
+                    <label for="linguagem">Idioma</label>
+                    <select id="linguagem" name="linguagem">
+                        <option value="pt-br">Português (Brasil)</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                    </select>
+
+                    <label for="notificacoes">
+                        <input type="checkbox" id="notificacoes" name="notificacoes" style="width:auto;margin-right:8px">
+                        Receber notificações por e-mail
+                    </label>
+
+                    <div class="button-group">
+                        <button type="submit" id="save-btn">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                        <button type="button" id="cancel-btn" class="secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+                <h3>Segurança</h3>
+                <label>Senha</label>
+                <button type="button" id="change-password-btn" class="secondary">
+                    <i class="fas fa-key"></i> Alterar Senha
+                </button>
+                <label style="margin-top:16px">Autenticação de Dois Fatores (2FA)</label>
+                <button type="button" id="toggle-2fa-btn" class="secondary">
+                    <i class="fas fa-lock"></i> <span id="2fa-status">Ativar</span> 2FA
+                </button>
             </div>
         </main>
     </div>
+
+    <script>
+        // Estado da aplicação
+        const app = {
+            currentUser: null,
+            isDirty: false
+        };
+
+        // Função para exibir alertas
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type} show`;
+            alert.innerHTML = `
+                <strong>${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'}</strong>
+                ${message}
+            `;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        // Carregar dados do usuário
+        async function loadUserData() {
+            try {
+                // Simular carregamento de dados (substituir com API real)
+                const userData = await fetchUserProfile();
+                app.currentUser = userData;
+                populateForm(userData);
+                updateTheme(userData.tema || 'light');
+            } catch (error) {
+                showAlert('Erro ao carregar perfil: ' + error.message, 'error');
+                console.error(error);
+            }
+        }
+
+        // Buscar dados do usuário (substitua com sua API)
+        async function fetchUserProfile() {
+            // Simular resposta da API
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({
+                        id: 1,
+                        nome: 'Michel Kzam',
+                        email: 'michel@linkzam.com',
+                        telefone: '(11) 99999-9999',
+                        empresa: 'Linkzam',
+                        tema: 'light',
+                        linguagem: 'pt-br',
+                        notificacoes: true,
+                        avatar: '👨‍💼',
+                        joinedDate: '2025-01-15',
+                        twoFactorEnabled: false
+                    });
+                }, 500);
+            });
+        }
+
+        // Preencher formulário com dados do usuário
+        function populateForm(userData) {
+            document.getElementById('nome').value = userData.nome || '';
+            document.getElementById('email').value = userData.email || '';
+            document.getElementById('telefone').value = userData.telefone || '';
+            document.getElementById('empresa').value = userData.empresa || '';
+            document.getElementById('tema').value = userData.tema || 'light';
+            document.getElementById('linguagem').value = userData.linguagem || 'pt-br';
+            document.getElementById('notificacoes').checked = userData.notificacoes || false;
+            
+            // Atualizar header de perfil
+            document.getElementById('profile-name').textContent = userData.nome || 'Usuário';
+            document.getElementById('profile-email').textContent = userData.email || '-';
+            document.getElementById('operator-name').textContent = userData.nome?.split(' ')[0] || 'Admin';
+            document.getElementById('user-avatar').textContent = userData.avatar || '👤';
+            
+            const joinedDate = new Date(userData.joinedDate);
+            document.getElementById('profile-joined').textContent = 
+                `Membro desde ${joinedDate.toLocaleDateString('pt-BR')}`;
+            
+            // Atualizar status 2FA
+            document.getElementById('2fa-status').textContent = 
+                userData.twoFactorEnabled ? 'Desativar' : 'Ativar';
+        }
+
+        // Gerenciar tema
+        function updateTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Salvar dados do usuário
+        async function saveUserData(formData) {
+            const saveBtn = document.getElementById('save-btn');
+            const originalText = saveBtn.innerHTML;
+            
+            try {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<span class="spinner"></span>Salvando...';
+                
+                // Simular envio para API (substituir com sua API real)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Atualizar tema se mudou
+                if (formData.tema !== app.currentUser.tema) {
+                    updateTheme(formData.tema);
+                }
+                
+                app.currentUser = { ...app.currentUser, ...formData };
+                populateForm(app.currentUser);
+                app.isDirty = false;
+                
+                showAlert('✓ Perfil atualizado com sucesso!', 'success');
+            } catch (error) {
+                showAlert('✕ Erro ao salvar perfil: ' + error.message, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                telefone: document.getElementById('telefone').value,
+                empresa: document.getElementById('empresa').value,
+                tema: document.getElementById('tema').value,
+                linguagem: document.getElementById('linguagem').value,
+                notificacoes: document.getElementById('notificacoes').checked
+            };
+            
+            // Validação básica
+            if (!formData.nome.trim()) {
+                showAlert('✕ Nome é obrigatório', 'error');
+                return;
+            }
+            if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showAlert('✕ E-mail inválido', 'error');
+                return;
+            }
+            
+            await saveUserData(formData);
+        });
+
+        document.getElementById('cancel-btn').addEventListener('click', () => {
+            if (app.isDirty) {
+                if (confirm('Descartar alterações não salvas?')) {
+                    populateForm(app.currentUser);
+                    app.isDirty = false;
+                }
+            }
+        });
+
+        document.getElementById('change-password-btn').addEventListener('click', () => {
+            const newPassword = prompt('Digite a nova senha:');
+            if (newPassword) {
+                const confirmPassword = prompt('Confirme a senha:');
+                if (newPassword === confirmPassword) {
+                    showAlert('✓ Senha alterada com sucesso!', 'success');
+                } else {
+                    showAlert('✕ Senhas não conferem', 'error');
+                }
+            }
+        });
+
+        document.getElementById('toggle-2fa-btn').addEventListener('click', () => {
+            app.currentUser.twoFactorEnabled = !app.currentUser.twoFactorEnabled;
+            document.getElementById('2fa-status').textContent = 
+                app.currentUser.twoFactorEnabled ? 'Desativar' : 'Ativar';
+            showAlert(
+                app.currentUser.twoFactorEnabled ? 
+                '✓ 2FA ativado com sucesso!' : 
+                '✓ 2FA desativado com sucesso!',
+                'success'
+            );
+        });
+
+        // Detectar mudanças no formulário
+        document.getElementById('profile-form').addEventListener('change', () => {
+            app.isDirty = true;
+        });
+
+        // Atualizar data
+        function updateDate() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('pt-BR', options);
+            document.getElementById('date-display').textContent = today;
+        }
+
+        // Recuperar tema salvo
+        function restoreTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            updateTheme(savedTheme);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            restoreTheme();
+            updateDate();
+            loadUserData();
+        });
+    </script>
 </body>
 </html>
